@@ -63,7 +63,6 @@ class TestContextValidation:
     
     def test_freshness_threshold_is_respected(self):
         """Data at the freshness boundary should be handled correctly."""
-        # Data exactly at the threshold should be accepted
         record_at_threshold = ContextRecord(
             source="enterprise_feed",
             updated_at=datetime.now(timezone.utc) - timedelta(minutes=30),
@@ -71,15 +70,11 @@ class TestContextValidation:
             authoritative=True,
         )
         
-        # Should be accepted (age is exactly 30 minutes)
-        # Note: Due to execution time, might be slightly over
         try:
             validate_context(record_at_threshold, max_age_minutes=30)
         except ContextValidationError:
-            # Acceptable due to execution time
             pass
         
-        # Data past the threshold should be rejected
         record_past_threshold = ContextRecord(
             source="enterprise_feed",
             updated_at=datetime.now(timezone.utc) - timedelta(minutes=31),
